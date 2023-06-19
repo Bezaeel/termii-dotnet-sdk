@@ -6,7 +6,4 @@ using System.Threading.Tasks;
 
 namespace termii.sdk.Switch;
 
-public enum Media
-{
 
-}
