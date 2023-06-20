@@ -19,14 +19,56 @@ public class PhoneBook : IPhoneBook
         _client.BaseAddress = new Uri(_config.BaseUrl);
     }
 
-    public async Task<PhoneBookResponse> GetPhoneBooks()
+    public async Task<CResponse> DeletePhoneBook(string phoneBookId)
+    {
+        string requestRoute = $"/phonebooks/{phoneBookId}/api_key={_config.APIKey}";
+
+        var response = await _client.DeleteAsync(requestRoute);
+        var r = await response.Content.ReadAsStringAsync();
+        var rs = JsonSerializer.Deserialize<CResponse>(r);
+        return rs;
+    }
+
+    public async Task<CResponse> UpdatePhoneBook(UpdatePhoneBookRequestDTO dto)
+    {
+        string requestRoute = $"/phonebooks/{dto.PhoneBookId}";
+        var body = new UpdatePhoneBookRequest
+        {
+            APIKey = _config.APIKey,
+            PhoneBookName = dto.PhoneBookName,
+            Description = dto.Description
+        };
+
+        var response = await _client.PutAsJsonAsync(requestRoute, body);
+        var r = await response.Content.ReadAsStringAsync();
+        var rs = JsonSerializer.Deserialize<CResponse>(r);
+        return rs;
+    }
+
+    public async Task<CResponse> CreatePhoneBook(CreatePhoneBookRequestDTO dto)
+    {
+        string requestRoute = "/phonebooks";
+        var body = new CreatePhoneBookRequest
+        {
+            APIKey = _config.APIKey,
+            PhoneBookName = dto.PhoneBookName,
+            Description = dto.Description
+        };
+
+        var response = await _client.PostAsJsonAsync<CreatePhoneBookRequest>(requestRoute, body);
+        var r = await response.Content.ReadAsStringAsync();
+        var rs = JsonSerializer.Deserialize<CResponse>(r);
+        return rs;
+    }
+
+    public async Task<FetchCResponse> GetPhoneBooks()
     {
         string apiKey = _config.APIKey;
         string requestRoute = $"/phonebooks?api_key={apiKey}";
 
         var response = await _client.GetAsync(requestRoute);
         var r = await response.Content.ReadAsStringAsync();
-        var rs = JsonSerializer.Deserialize<PhoneBookResponse>(r);
+        var rs = JsonSerializer.Deserialize<FetchCResponse>(r);
         return rs;
     }
 }
